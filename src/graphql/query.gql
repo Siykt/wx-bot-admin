@@ -1,0 +1,36 @@
+query bot($botId: String!) {
+  bot(id: $botId) {
+    id
+    scanQrcode
+    botContacts {
+      id
+      name
+      gender
+      alias
+      isFriend
+      star
+      type
+      province
+      city
+      address
+    }
+    botRooms {
+      id
+      topic
+      announce
+      alias
+      member {
+        id
+        name
+        gender
+        alias
+        isFriend
+        star
+        type
+        province
+        city
+        address
+      }
+    }
+  }
+}

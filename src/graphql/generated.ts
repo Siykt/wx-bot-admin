@@ -49,6 +49,8 @@ export type BotModel = {
   botContacts: Array<BotContactInfo>;
   /** 机器人的所有群信息 */
   botRooms: Array<BotRoomInfo>;
+  /** 获取机器人状态 */
+  botStatus: Scalars['Float'];
   /** 机器人实例id */
   id: Scalars['String'];
   /** 登录二维码 */
@@ -138,6 +140,15 @@ export type CreateBotMutation = {
   createBot: { __typename?: 'BotModel'; id: string; scanQrcode: string };
 };
 
+export type BotStatusQueryVariables = Exact<{
+  botId: Scalars['String'];
+}>;
+
+export type BotStatusQuery = {
+  __typename?: 'Query';
+  bot?: { __typename?: 'BotModel'; botStatus: number } | null;
+};
+
 export type BotQueryVariables = Exact<{
   botId: Scalars['String'];
 }>;
@@ -189,6 +200,13 @@ export const CreateBotDocument = gql`
     createBot(botId: $botId) {
       id
       scanQrcode
+    }
+  }
+`;
+export const BotStatusDocument = gql`
+  query botStatus($botId: String!) {
+    bot(id: $botId) {
+      botStatus
     }
   }
 `;
@@ -253,6 +271,20 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
           }),
         'createBot',
         'mutation',
+      );
+    },
+    botStatus(
+      variables: BotStatusQueryVariables,
+      requestHeaders?: Dom.RequestInit['headers'],
+    ): Promise<BotStatusQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<BotStatusQuery>(BotStatusDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'botStatus',
+        'query',
       );
     },
     bot(

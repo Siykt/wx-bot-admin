@@ -1,3 +1,9 @@
+query botStatus($botId: String!) {
+  bot(id: $botId) {
+    botStatus
+  }
+}
+
 query bot($botId: String!) {
   bot(id: $botId) {
     id

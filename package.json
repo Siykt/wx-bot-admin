@@ -25,7 +25,8 @@
     "test:br": "npx http-server dist --cors --brotli -c-1",
     "reinstall": "rimraf yarn.lock && rimraf package.lock.json && rimraf node_modules && npm run bootstrap",
     "prepare": "husky install",
-    "gen:icon": "esno ./build/generate/icon/index.ts"
+    "gen:icon": "esno ./build/generate/icon/index.ts",
+    "gen:graphql": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 graphql-codegen -c src/graphql/codegen.yml"
   },
   "dependencies": {
     "@ant-design/colors": "^6.0.0",
@@ -38,6 +39,9 @@
     "axios": "^0.24.0",
     "crypto-js": "^4.1.1",
     "echarts": "^5.2.2",
+    "graphql": "^16.6.0",
+    "graphql-request": "^4.0.0",
+    "graphql-tag": "^2.0.0",
     "lodash-es": "^4.17.21",
     "mockjs": "^1.1.0",
     "moment": "^2.29.1",
@@ -56,6 +60,10 @@
   "devDependencies": {
     "@commitlint/cli": "^14.1.0",
     "@commitlint/config-conventional": "^14.1.0",
+    "@graphql-codegen/cli": "^2.11.8",
+    "@graphql-codegen/typescript": "^2.7.3",
+    "@graphql-codegen/typescript-graphql-request": "^4.5.3",
+    "@graphql-codegen/typescript-operations": "^2.5.3",
     "@iconify/json": "^1.1.422",
     "@purge-icons/generated": "^0.7.0",
     "@types/codemirror": "^5.60.5",
@@ -103,6 +111,7 @@
     "postcss-less": "^5.0.0",
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
+    "rollup": "^2.0.0",
     "rollup-plugin-visualizer": "^5.5.2",
     "stylelint": "^14.0.1",
     "stylelint-config-html": "^1.0.0",

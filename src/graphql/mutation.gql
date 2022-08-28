@@ -1,0 +1,6 @@
+mutation createBot($botId: String!) {
+  createBot(botId: $botId) {
+    id
+    scanQrcode
+  }
+}

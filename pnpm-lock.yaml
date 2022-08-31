@@ -80,7 +80,7 @@ specifiers:
   qs: ^6.10.1
   resize-observer-polyfill: ^1.5.1
   rimraf: ^3.0.2
-  rollup: ^2.0.0
+  rollup: ^2.56.3
   rollup-plugin-visualizer: ^5.5.2
   sortablejs: ^1.14.0
   stylelint: ^14.0.1

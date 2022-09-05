@@ -4,39 +4,26 @@ query botStatus($botId: String!) {
   }
 }
 
-query bot($botId: String!) {
+query bot($botId: String!, $botContactsRefresh: Boolean, $botRoomsRefresh: Boolean) {
   bot(id: $botId) {
     id
+    name
     scanQrcode
-    botContacts {
+    botStatus
+    botContacts(refresh: $botContactsRefresh) {
       id
       name
       gender
       alias
-      isFriend
-      star
-      type
-      province
-      city
       address
+      type
+      botId
     }
-    botRooms {
+    botRooms(refresh: $botRoomsRefresh) {
       id
       topic
       announce
       alias
-      member {
-        id
-        name
-        gender
-        alias
-        isFriend
-        star
-        type
-        province
-        city
-        address
-      }
     }
   }
 }

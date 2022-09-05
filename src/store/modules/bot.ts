@@ -12,20 +12,21 @@ interface BotState {
 export const useBotStore = defineStore({
   id: 'bot',
   state: (): BotState => ({
-    botId: undefined,
+    botId: localStorage.getItem('botId') ?? '',
     scanQrcode: undefined,
     status: 0,
   }),
   actions: {
-    async createBot(botId: string) {
+    async createBot(startBotId: string) {
       // 单机器人模型
       if (this.botId) return false;
-      const { createBot } = await graphqlClient.createBot({
-        botId,
+      const { startBot } = await graphqlClient.startBot({
+        startBotId,
       });
 
-      this.botId = createBot.id;
-      this.scanQrcode = createBot.scanQrcode;
+      this.botId = startBot.id;
+      localStorage.setItem('botId', this.botId);
+      this.scanQrcode = startBot.scanQrcode ?? '';
       return true;
     },
     async waitingBotReady() {
@@ -38,7 +39,11 @@ export const useBotStore = defineStore({
     },
     async getBotInfo() {
       if (!this.botId) return;
-      const { bot } = await graphqlClient.bot({ botId: this.botId });
+      const { bot } = await graphqlClient.bot({
+        botId: this.botId,
+        botContactsRefresh: true,
+        botRoomsRefresh: true,
+      });
       return bot;
     },
   },

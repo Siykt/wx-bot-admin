@@ -14,74 +14,184 @@ export type Scalars = {
   Int: number;
   Float: number;
   DateTime: any;
+  JSON: any;
   Upload: any;
 };
 
-/** 机器人联系人模型 */
-export type BotContactInfo = {
-  __typename?: 'BotContactInfo';
-  /** 地址 */
-  address: Scalars['String'];
-  /** 别名(备注) */
-  alias?: Maybe<Scalars['String']>;
-  /** 市 */
-  city: Scalars['String'];
-  /** 性别 */
-  gender: Scalars['String'];
-  /** 联系人id */
+/** 自动化配置模型 */
+export type AutoReplyConfig = {
+  __typename?: 'AutoReplyConfig';
+  /** 机器人实例id */
+  botId: Scalars['String'];
+  /** 需要执行的内容 */
+  content: Scalars['String'];
+  /** 创建时间 */
+  createdAt: Scalars['DateTime'];
+  /** 配置描述 */
+  description?: Maybe<Scalars['String']>;
+  /** ID */
   id: Scalars['String'];
-  /** 是否为好友 */
-  isFriend: Scalars['Boolean'];
-  /** 联系人名称 */
+  /** 配置名称 */
   name: Scalars['String'];
-  /** 省 */
-  province: Scalars['String'];
-  /** 是否为常用联系人 */
-  star?: Maybe<Scalars['Boolean']>;
-  /** 个人/公众号 */
-  type: Scalars['String'];
+  /** 优先级 */
+  priority: Scalars['Float'];
+  /** 表达式 */
+  triggerExpr: Scalars['JSON'];
+  /** 运行日志 */
+  triggerLog: Array<AutoReplyTriggerLog>;
+  /** 触发周期 */
+  triggerPeriod?: Maybe<TriggerPeriod>;
+  /** 触发频率 */
+  triggerRate: TriggerRate;
+  /** 触发类型 */
+  triggerType: TriggerType;
+  /** 更新时间 */
+  updatedAt: Scalars['DateTime'];
+};
+
+export type AutoReplyConfigInput = {
+  botId: Scalars['String'];
+  content: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+  priority: Scalars['Float'];
+  triggerExpr: Scalars['JSON'];
+  triggerPeriod?: InputMaybe<TriggerPeriod>;
+  triggerRate: TriggerRate;
+  triggerType: TriggerType;
+};
+
+/** 自动化配置日志 */
+export type AutoReplyTriggerLog = {
+  __typename?: 'AutoReplyTriggerLog';
+  /** 自动化配置模型 */
+  autoReplyConfigId: Scalars['String'];
+  /** 创建时间 */
+  createdAt: Scalars['DateTime'];
+  /** ID */
+  id: Scalars['String'];
+  /** 更新时间 */
+  updatedAt: Scalars['DateTime'];
 };
 
 /** 机器人模型 */
-export type BotModel = {
-  __typename?: 'BotModel';
+export type Bot = {
+  __typename?: 'Bot';
   /** 机器人的联系人信息 */
-  botContacts: Array<BotContactInfo>;
+  botContacts: Array<BotContact>;
   /** 机器人的所有群信息 */
-  botRooms: Array<BotRoomInfo>;
+  botRooms: Array<BotRoom>;
   /** 获取机器人状态 */
   botStatus: Scalars['Float'];
+  /** 创建时间 */
+  createdAt: Scalars['DateTime'];
   /** 机器人实例id */
   id: Scalars['String'];
-  /** 登录二维码 */
-  scanQrcode: Scalars['String'];
+  /** 机器人账号名称 */
+  name?: Maybe<Scalars['String']>;
+  /** 登录的二维码 */
+  scanQrcode?: Maybe<Scalars['String']>;
+  /** 更新时间 */
+  updatedAt: Scalars['DateTime'];
+  /** 用户ID */
+  userId: Scalars['String'];
 };
 
-/** 机器人群信息 */
-export type BotRoomInfo = {
-  __typename?: 'BotRoomInfo';
+/** 机器人模型 */
+export type BotBotContactsArgs = {
+  refresh?: InputMaybe<Scalars['Boolean']>;
+};
+
+/** 机器人模型 */
+export type BotBotRoomsArgs = {
+  refresh?: InputMaybe<Scalars['Boolean']>;
+};
+
+/** 机器人联系人模型 */
+export type BotContact = {
+  __typename?: 'BotContact';
+  /** 地址 */
+  address?: Maybe<Scalars['String']>;
+  /** 别名(备注) */
+  alias?: Maybe<Scalars['String']>;
+  /** 机器人实例id */
+  botId: Scalars['String'];
+  /** 创建时间 */
+  createdAt: Scalars['DateTime'];
+  /** 性别 */
+  gender: BotContactGender;
+  /** 联系人id */
+  id: Scalars['String'];
+  /** 联系人名称 */
+  name: Scalars['String'];
+  /** 个人/公众号 */
+  type: BotContactType;
+  /** 更新时间 */
+  updatedAt: Scalars['DateTime'];
+};
+
+/** 性别 */
+export enum BotContactGender {
+  /** 女 */
+  Female = 'Female',
+  /** 男 */
+  Male = 'Male',
+  /** 未知 */
+  Unknown = 'Unknown',
+}
+
+/** 账号类型 */
+export enum BotContactType {
+  /** 团体 */
+  Corporation = 'Corporation',
+  /** 个人 */
+  Individual = 'Individual',
+  /** 公众号 */
+  Official = 'Official',
+  /** 未知 */
+  Unknown = 'Unknown',
+}
+
+/** 机器人群模型 */
+export type BotRoom = {
+  __typename?: 'BotRoom';
   /** 机器人在群中的别名 */
-  alias: Scalars['String'];
-  /** 群公共 */
-  announce: Scalars['String'];
+  alias?: Maybe<Scalars['String']>;
+  /** 群公告 */
+  announce?: Maybe<Scalars['String']>;
+  /** 创建时间 */
+  createdAt: Scalars['DateTime'];
   /** 群id */
   id: Scalars['String'];
-  /** 群成员 */
-  member: Array<BotContactInfo>;
   /** 群名称 */
   topic: Scalars['String'];
+  /** 更新时间 */
+  updatedAt: Scalars['DateTime'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  /** 创建机器人 */
-  createBot: BotModel;
+  removeAutoConfig: Scalars['Boolean'];
+  /** 创建/更新自动化配置 */
+  saveAutoStartConfig: AutoReplyConfig;
+  /** 启动/创建机器人 */
+  startBot: Bot;
   /** 上传文件 */
   upload: Scalars['String'];
 };
 
-export type MutationCreateBotArgs = {
-  botId: Scalars['String'];
+export type MutationRemoveAutoConfigArgs = {
+  id: Scalars['String'];
+};
+
+export type MutationSaveAutoStartConfigArgs = {
+  input: AutoReplyConfigInput;
+};
+
+export type MutationStartBotArgs = {
+  id?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type MutationUploadArgs = {
@@ -90,15 +200,52 @@ export type MutationUploadArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  /** 自动化配置详情 */
+  autoReplyConfig: AutoReplyConfig;
   /** 获取机器人 */
-  bot?: Maybe<BotModel>;
+  bot?: Maybe<Bot>;
   /** 查询自身 */
   myself: User;
+};
+
+export type QueryAutoReplyConfigArgs = {
+  id: Scalars['String'];
 };
 
 export type QueryBotArgs = {
   id: Scalars['String'];
 };
+
+/** 触发周期 */
+export enum TriggerPeriod {
+  /** 每天 */
+  Day = 'Day',
+  Hour = 'Hour',
+  /** 每分钟 */
+  Minute = 'Minute',
+  /** 每月 */
+  Month = 'Month',
+  /** 每周 */
+  Week = 'Week',
+}
+
+/** 触发频率 */
+export enum TriggerRate {
+  /** 每次 */
+  Always = 'Always',
+  /** 自定义 */
+  Custom = 'Custom',
+  /** 一次 */
+  Once = 'Once',
+}
+
+/** 触发类型 */
+export enum TriggerType {
+  /** 自动触发 */
+  Auto = 'Auto',
+  /** 事件触发 */
+  Event = 'Event',
+}
 
 /** 用户模型 */
 export type User = {
@@ -131,13 +278,14 @@ export enum UserRoleType {
   SystemAdmin = 'SystemAdmin',
 }
 
-export type CreateBotMutationVariables = Exact<{
-  botId: Scalars['String'];
+export type StartBotMutationVariables = Exact<{
+  startBotId?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
 }>;
 
-export type CreateBotMutation = {
+export type StartBotMutation = {
   __typename?: 'Mutation';
-  createBot: { __typename?: 'BotModel'; id: string; scanQrcode: string };
+  startBot: { __typename?: 'Bot'; scanQrcode?: string | null; id: string };
 };
 
 export type BotStatusQueryVariables = Exact<{
@@ -146,60 +294,48 @@ export type BotStatusQueryVariables = Exact<{
 
 export type BotStatusQuery = {
   __typename?: 'Query';
-  bot?: { __typename?: 'BotModel'; botStatus: number } | null;
+  bot?: { __typename?: 'Bot'; botStatus: number } | null;
 };
 
 export type BotQueryVariables = Exact<{
   botId: Scalars['String'];
+  botContactsRefresh?: InputMaybe<Scalars['Boolean']>;
+  botRoomsRefresh?: InputMaybe<Scalars['Boolean']>;
 }>;
 
 export type BotQuery = {
   __typename?: 'Query';
   bot?: {
-    __typename?: 'BotModel';
+    __typename?: 'Bot';
     id: string;
-    scanQrcode: string;
+    name?: string | null;
+    scanQrcode?: string | null;
+    botStatus: number;
     botContacts: Array<{
-      __typename?: 'BotContactInfo';
+      __typename?: 'BotContact';
       id: string;
       name: string;
-      gender: string;
+      gender: BotContactGender;
       alias?: string | null;
-      isFriend: boolean;
-      star?: boolean | null;
-      type: string;
-      province: string;
-      city: string;
-      address: string;
+      address?: string | null;
+      type: BotContactType;
+      botId: string;
     }>;
     botRooms: Array<{
-      __typename?: 'BotRoomInfo';
+      __typename?: 'BotRoom';
       id: string;
       topic: string;
-      announce: string;
-      alias: string;
-      member: Array<{
-        __typename?: 'BotContactInfo';
-        id: string;
-        name: string;
-        gender: string;
-        alias?: string | null;
-        isFriend: boolean;
-        star?: boolean | null;
-        type: string;
-        province: string;
-        city: string;
-        address: string;
-      }>;
+      announce?: string | null;
+      alias?: string | null;
     }>;
   } | null;
 };
 
-export const CreateBotDocument = gql`
-  mutation createBot($botId: String!) {
-    createBot(botId: $botId) {
-      id
+export const StartBotDocument = gql`
+  mutation startBot($startBotId: String, $name: String) {
+    startBot(id: $startBotId, name: $name) {
       scanQrcode
+      id
     }
   }
 `;
@@ -211,39 +347,26 @@ export const BotStatusDocument = gql`
   }
 `;
 export const BotDocument = gql`
-  query bot($botId: String!) {
+  query bot($botId: String!, $botContactsRefresh: Boolean, $botRoomsRefresh: Boolean) {
     bot(id: $botId) {
       id
+      name
       scanQrcode
-      botContacts {
+      botStatus
+      botContacts(refresh: $botContactsRefresh) {
         id
         name
         gender
         alias
-        isFriend
-        star
-        type
-        province
-        city
         address
+        type
+        botId
       }
-      botRooms {
+      botRooms(refresh: $botRoomsRefresh) {
         id
         topic
         announce
         alias
-        member {
-          id
-          name
-          gender
-          alias
-          isFriend
-          star
-          type
-          province
-          city
-          address
-        }
       }
     }
   }
@@ -259,17 +382,17 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    createBot(
-      variables: CreateBotMutationVariables,
+    startBot(
+      variables?: StartBotMutationVariables,
       requestHeaders?: Dom.RequestInit['headers'],
-    ): Promise<CreateBotMutation> {
+    ): Promise<StartBotMutation> {
       return withWrapper(
         (wrappedRequestHeaders) =>
-          client.request<CreateBotMutation>(CreateBotDocument, variables, {
+          client.request<StartBotMutation>(StartBotDocument, variables, {
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'createBot',
+        'startBot',
         'mutation',
       );
     },

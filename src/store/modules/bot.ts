@@ -19,7 +19,9 @@ export const useBotStore = defineStore({
   actions: {
     async createBot(startBotId: string) {
       // 单机器人模型
-      if (this.botId) return false;
+      if (this.botId) {
+        startBotId = this.botId;
+      }
       const { startBot } = await graphqlClient.startBot({
         startBotId,
       });

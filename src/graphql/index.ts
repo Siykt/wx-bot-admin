@@ -2,11 +2,12 @@ import { ClientError, GraphQLClient } from 'graphql-request';
 import { useGlobSetting } from '../hooks/setting';
 import { getSdk } from './generated';
 import { getToken } from '/@/utils/auth';
-import { BasicModal } from '/@/components/Modal';
+import { useMessage } from '../hooks/web/useMessage';
 
 const globSetting = useGlobSetting();
 export const clientHeaders = new Headers();
 
+const { createMessage } = useMessage();
 const graphqlClient = new GraphQLClient(globSetting.apiUrl, { headers: clientHeaders });
 
 const client = getSdk(graphqlClient, async (action) => {
@@ -15,7 +16,7 @@ const client = getSdk(graphqlClient, async (action) => {
     const result = await action();
     return result;
   } catch (error) {
-    BasicModal.error((error as ClientError).response.errors?.[0].message || '');
+    createMessage.error((error as ClientError).response.errors?.[0].message || '');
     throw (error as ClientError).response.errors?.[0].extensions?.exception;
   }
 });

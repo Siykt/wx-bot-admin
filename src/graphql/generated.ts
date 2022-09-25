@@ -160,6 +160,8 @@ export type BotRoom = {
   alias?: Maybe<Scalars['String']>;
   /** 群公告 */
   announce?: Maybe<Scalars['String']>;
+  /** 机器人实例id */
+  botId: Scalars['String'];
   /** 创建时间 */
   createdAt: Scalars['DateTime'];
   /** 群id */
@@ -288,6 +290,28 @@ export type StartBotMutation = {
   startBot: { __typename?: 'Bot'; scanQrcode?: string | null; id: string };
 };
 
+export type SaveAutoStartConfigMutationVariables = Exact<{
+  input: AutoReplyConfigInput;
+}>;
+
+export type SaveAutoStartConfigMutation = {
+  __typename?: 'Mutation';
+  saveAutoStartConfig: {
+    __typename?: 'AutoReplyConfig';
+    name: string;
+    content: string;
+    description?: string | null;
+    priority: number;
+    triggerType: TriggerType;
+    triggerRate: TriggerRate;
+    triggerPeriod?: TriggerPeriod | null;
+    createdAt: any;
+    updatedAt: any;
+    botId: string;
+    id: string;
+  };
+};
+
 export type BotStatusQueryVariables = Exact<{
   botId: Scalars['String'];
 }>;
@@ -335,6 +359,23 @@ export const StartBotDocument = gql`
   mutation startBot($startBotId: String, $name: String) {
     startBot(id: $startBotId, name: $name) {
       scanQrcode
+      id
+    }
+  }
+`;
+export const SaveAutoStartConfigDocument = gql`
+  mutation SaveAutoStartConfig($input: AutoReplyConfigInput!) {
+    saveAutoStartConfig(input: $input) {
+      name
+      content
+      description
+      priority
+      triggerType
+      triggerRate
+      triggerPeriod
+      createdAt
+      updatedAt
+      botId
       id
     }
   }
@@ -393,6 +434,20 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'startBot',
+        'mutation',
+      );
+    },
+    SaveAutoStartConfig(
+      variables: SaveAutoStartConfigMutationVariables,
+      requestHeaders?: Dom.RequestInit['headers'],
+    ): Promise<SaveAutoStartConfigMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<SaveAutoStartConfigMutation>(SaveAutoStartConfigDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'SaveAutoStartConfig',
         'mutation',
       );
     },

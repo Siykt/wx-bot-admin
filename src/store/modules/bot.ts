@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import graphqlClient from '/@/graphql';
+import { BotQuery } from '/@/graphql/generated';
 import { useWait } from '/@/hooks/web/useWait';
 import { store } from '/@/store';
 
@@ -7,6 +8,7 @@ interface BotState {
   botId?: string;
   scanQrcode?: string;
   status: number;
+  botInfo: BotQuery['bot'];
 }
 
 export const useBotStore = defineStore({
@@ -15,6 +17,7 @@ export const useBotStore = defineStore({
     botId: localStorage.getItem('botId') ?? '',
     scanQrcode: undefined,
     status: 0,
+    botInfo: undefined,
   }),
   actions: {
     async createBot(startBotId: string) {
@@ -41,11 +44,13 @@ export const useBotStore = defineStore({
     },
     async getBotInfo() {
       if (!this.botId) return;
+      if (this.botInfo) return this.botInfo;
       const { bot } = await graphqlClient.bot({
         botId: this.botId,
         botContactsRefresh: true,
         botRoomsRefresh: true,
       });
+      this.botInfo = bot;
       return bot;
     },
   },

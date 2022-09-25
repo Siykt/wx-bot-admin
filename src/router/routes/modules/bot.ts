@@ -20,6 +20,14 @@ const bot: AppRouteModule = {
         title: '创建机器人',
       },
     },
+    {
+      path: 'auto-reply',
+      name: 'BotAutoReply',
+      component: () => import('/@/views/bot/autoReply.vue'),
+      meta: {
+        title: '自动化脚本',
+      },
+    },
   ],
 };
 

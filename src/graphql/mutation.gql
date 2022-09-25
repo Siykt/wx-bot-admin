@@ -4,3 +4,19 @@ mutation startBot($startBotId: String, $name: String) {
     id
   }
 }
+
+mutation SaveAutoStartConfig($input: AutoReplyConfigInput!) {
+  saveAutoStartConfig(input: $input) {
+    name
+    content
+    description
+    priority
+    triggerType
+    triggerRate
+    triggerPeriod
+    createdAt
+    updatedAt
+    botId
+    id
+  }
+}

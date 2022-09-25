@@ -1,13 +1,23 @@
 <script setup lang="ts">
-  import { Form, Button, Tag, Input } from 'ant-design-vue';
+  import { Form, Button, Tag, Input, Select, SelectOption } from 'ant-design-vue';
   import { reactive, ref } from 'vue';
-  import { AutoReplyConfigInput } from '/@/graphql/generated';
+  import {
+    AutoReplyConfigInput,
+    TriggerType,
+    TriggerRate,
+    TriggerPeriod,
+  } from '/@/graphql/generated';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useBotStoreWithOut } from '/@/store/modules/bot';
   import { PageWrapper } from '/@/components/Page';
   import graphqlClient from '/@/graphql';
 
-  type FromData = AutoReplyConfigInput & { keywords: string; description: string };
+  type FromData = AutoReplyConfigInput & {
+    keywords: string;
+    description: string;
+    triggerPeriod?: TriggerPeriod;
+    triggerName: string;
+  };
 
   const keywordList = ref<string[]>([]);
   const botStore = useBotStoreWithOut();
@@ -15,8 +25,6 @@
   const formData = reactive<FromData>({
     botId: botStore.botId,
     priority: 1,
-    triggerType: 'Event',
-    triggerRate: 'Always',
   } as FromData);
   const { createMessage } = useMessage();
   const loading = ref(false);
@@ -27,18 +35,16 @@
       loading.value = true;
       await formRef.value?.validate();
       if (!keywordList.value.length) return createMessage.error('请添加关键词!');
+      const triggerExpr =
+        formData.triggerType === TriggerType.Auto
+          ? { name: formData.triggerName, alias: formData.triggerName }
+          : { in: [{ var: 'content' }, keywordList.value] };
       await graphqlClient.SaveAutoStartConfig({
         input: {
           ...formData,
           keywords: undefined,
-          triggerExpr: {
-            in: [
-              {
-                var: 'content',
-              },
-              keywordList.value,
-            ],
-          },
+          triggerName: undefined,
+          triggerExpr,
         } as AutoReplyConfigInput,
       });
       handleReset();
@@ -66,6 +72,7 @@
 </script>
 <template>
   <PageWrapper>
+    <div class="title">创建自动化脚本</div>
     <Form
       class="form"
       autocomplete="off"
@@ -85,14 +92,49 @@
         <Input v-model:value="formData.description" placeholder="请输入自动化描述" />
       </FormItem>
       <FormItem
-        :rules="[{ required: true, message: '请输入自动回复的内容' }]"
-        label="自动回复的内容"
-        name="content"
+        :rules="[{ required: true, message: '请选择自动化脚本触发频率' }]"
+        label="触发频率"
+        name="triggerRate"
       >
-        <Input v-model:value="formData.content" placeholder="请输入自动回复的内容" />
+        <Select placeholder="请选择自动化脚本触发频率" v-model:value="formData.triggerRate">
+          <SelectOption :value="TriggerRate.Always">每次都触发</SelectOption>
+          <SelectOption :value="TriggerRate.Once">仅触发一次</SelectOption>
+          <SelectOption disabled :value="TriggerRate.Custom">自定义</SelectOption>
+        </Select>
       </FormItem>
-
-      <FormItem label="关键词" name="keywords">
+      <FormItem
+        :rules="[{ required: true, message: '请选择自动化脚本触发器类型' }]"
+        label="触发器类型"
+        name="triggerType"
+      >
+        <Select placeholder="请选择自动化脚本触发器类型" v-model:value="formData.triggerType">
+          <SelectOption :value="TriggerType.Auto">定时触发</SelectOption>
+          <SelectOption :value="TriggerType.Event">关键词触发</SelectOption>
+        </Select>
+      </FormItem>
+      <FormItem
+        :rules="[{ required: true, message: '请输入执行对象名称' }]"
+        v-if="formData.triggerType === TriggerType.Auto"
+        label="执行对象(用户名/别名)"
+        name="triggerName"
+      >
+        <Input v-model:value="formData.triggerName" placeholder="请输入执行对象名称" />
+      </FormItem>
+      <FormItem
+        :rules="[{ required: true, message: '请选择触发周期' }]"
+        v-if="formData.triggerType === TriggerType.Auto"
+        label="触发周期"
+        name="triggerPeriod"
+      >
+        <Select v-model:value="formData.triggerPeriod">
+          <SelectOption :value="TriggerPeriod.Minute">每分钟</SelectOption>
+          <SelectOption :value="TriggerPeriod.Hour">每小时</SelectOption>
+          <SelectOption :value="TriggerPeriod.Day">每一天</SelectOption>
+          <SelectOption :value="TriggerPeriod.Week">每一周</SelectOption>
+          <SelectOption :value="TriggerPeriod.Month">每一月</SelectOption>
+        </Select>
+      </FormItem>
+      <FormItem v-if="formData.triggerType === TriggerType.Event" label="关键词" name="keywords">
         <Input
           style="width: calc(100% - 200px)"
           v-model:value="formData.keywords"
@@ -111,6 +153,13 @@
             {{ keyword }}
           </Tag>
         </div>
+      </FormItem>
+      <FormItem
+        :rules="[{ required: true, message: '请输入自动回复的内容' }]"
+        label="自动回复的内容"
+        name="content"
+      >
+        <Input v-model:value="formData.content" placeholder="请输入自动回复的内容" />
       </FormItem>
       <FormItem>
         <div class="flex pl-30 pr-30">
@@ -131,5 +180,7 @@
 </template>
 
 <style lang="less" scoped>
-  // something
+  .title {
+    font-size: 30px;
+  }
 </style>

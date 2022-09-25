@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { Form, Button, Tag, Input, Select, SelectOption } from 'ant-design-vue';
+  import { Form, Button, Tag, Input, Select, SelectOption, Switch } from 'ant-design-vue';
   import { reactive, ref } from 'vue';
   import {
     AutoReplyConfigInput,
@@ -28,17 +28,18 @@
   } as FromData);
   const { createMessage } = useMessage();
   const loading = ref(false);
+  const isAlias = ref(false);
   const formRef = ref<typeof Form>();
   const handleSubmit = async () => {
     if (!botStore.botId) return createMessage.error('请先创建机器人!');
     try {
       loading.value = true;
       await formRef.value?.validate();
-      if (!keywordList.value.length) return createMessage.error('请添加关键词!');
-      const triggerExpr =
-        formData.triggerType === TriggerType.Auto
-          ? { name: formData.triggerName, alias: formData.triggerName }
-          : { in: [{ var: 'content' }, keywordList.value] };
+      const isAuto = formData.triggerType === TriggerType.Auto;
+      if (!isAuto && !keywordList.value.length) return createMessage.error('请添加关键词!');
+      const triggerExpr = isAuto
+        ? { [isAlias.value ? 'alias' : 'name']: formData.triggerName }
+        : { in: [{ var: 'content' }, keywordList.value] };
       await graphqlClient.SaveAutoStartConfig({
         input: {
           ...formData,
@@ -118,7 +119,14 @@
         label="执行对象(用户名/别名)"
         name="triggerName"
       >
-        <Input v-model:value="formData.triggerName" placeholder="请输入执行对象名称" />
+        <div class="fc">
+          <div>是否为别名: <Switch v-model:checked="isAlias" /></div>
+          <Input
+            class="w-20"
+            v-model:value="formData.triggerName"
+            placeholder="请输入执行对象名称"
+          />
+        </div>
       </FormItem>
       <FormItem
         :rules="[{ required: true, message: '请选择触发周期' }]"
@@ -126,7 +134,7 @@
         label="触发周期"
         name="triggerPeriod"
       >
-        <Select v-model:value="formData.triggerPeriod">
+        <Select placeholder="请选择触发周期" v-model:value="formData.triggerPeriod">
           <SelectOption :value="TriggerPeriod.Minute">每分钟</SelectOption>
           <SelectOption :value="TriggerPeriod.Hour">每小时</SelectOption>
           <SelectOption :value="TriggerPeriod.Day">每一天</SelectOption>
@@ -180,6 +188,16 @@
 </template>
 
 <style lang="less" scoped>
+  .fc {
+    display: flex;
+    align-items: center;
+
+    .w-20 {
+      width: 200px;
+      margin-left: 10px;
+    }
+  }
+
   .title {
     font-size: 30px;
   }

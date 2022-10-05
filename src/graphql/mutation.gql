@@ -1,3 +1,7 @@
+mutation pwdLogin($password: String!, $username: String!) {
+  pwdLogin(password: $password, username: $username)
+}
+
 mutation startBot($startBotId: String, $name: String) {
   startBot(id: $startBotId, name: $name) {
     scanQrcode

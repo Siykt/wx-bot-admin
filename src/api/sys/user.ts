@@ -1,7 +1,6 @@
 import { defHttp } from '/@/utils/http/axios';
-import { LoginParams, LoginResultModel, GetUserInfoModel } from './model/userModel';
-
-import { ErrorMessageMode } from '/#/axios';
+import { LoginParams } from './model/userModel';
+import graphqlClient from '/@/graphql';
 
 enum Api {
   Login = '/login',
@@ -13,23 +12,17 @@ enum Api {
 /**
  * @description: user login api
  */
-export function loginApi(params: LoginParams, mode: ErrorMessageMode = 'modal') {
-  return defHttp.post<LoginResultModel>(
-    {
-      url: Api.Login,
-      params,
-    },
-    {
-      errorMessageMode: mode,
-    },
-  );
+export async function loginApi(params: LoginParams) {
+  const { pwdLogin } = await graphqlClient.pwdLogin(params);
+  return pwdLogin;
 }
 
 /**
  * @description: getUserInfo
  */
-export function getUserInfo() {
-  return defHttp.get<GetUserInfoModel>({ url: Api.GetUserInfo }, { errorMessageMode: 'none' });
+export async function getUserInfo() {
+  const { myself } = await graphqlClient.myself();
+  return myself;
 }
 
 export function getPermCode() {

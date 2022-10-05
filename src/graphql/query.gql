@@ -1,3 +1,17 @@
+query myself {
+  myself {
+    id
+    mobilePhoneNumber
+    username
+    avatar
+    mobilePhoneVerified
+    nickname
+    createdAt
+    updatedAt
+    roles
+  }
+}
+
 query botStatus($botId: String!) {
   bot(id: $botId) {
     botStatus

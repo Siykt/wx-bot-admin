@@ -51,14 +51,22 @@ export type AutoReplyConfig = {
 
 export type AutoReplyConfigInput = {
   botId: Scalars['String'];
+  /** 自动回复内容 */
   content: Scalars['String'];
+  /** 自动化脚本描述 */
   description?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['String']>;
+  /** 自动化脚本名称 */
   name: Scalars['String'];
+  /** 优先级 */
   priority: Scalars['Float'];
+  /** 表达式, Auto为{name: string | RegExp} / {alias: string | RegExp}; Event为 "JSONLogic" */
   triggerExpr: Scalars['JSON'];
+  /** 触发周期 */
   triggerPeriod?: InputMaybe<TriggerPeriod>;
+  /** 触发频率 */
   triggerRate: TriggerRate;
+  /** 触发类型 */
   triggerType: TriggerType;
 };
 
@@ -174,6 +182,8 @@ export type BotRoom = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** 密码登录 */
+  pwdLogin: Scalars['String'];
   removeAutoConfig: Scalars['Boolean'];
   /** 创建/更新自动化配置 */
   saveAutoStartConfig: AutoReplyConfig;
@@ -181,6 +191,11 @@ export type Mutation = {
   startBot: Bot;
   /** 上传文件 */
   upload: Scalars['String'];
+};
+
+export type MutationPwdLoginArgs = {
+  password: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type MutationRemoveAutoConfigArgs = {
@@ -280,6 +295,13 @@ export enum UserRoleType {
   SystemAdmin = 'SystemAdmin',
 }
 
+export type PwdLoginMutationVariables = Exact<{
+  password: Scalars['String'];
+  username: Scalars['String'];
+}>;
+
+export type PwdLoginMutation = { __typename?: 'Mutation'; pwdLogin: string };
+
 export type StartBotMutationVariables = Exact<{
   startBotId?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
@@ -309,6 +331,24 @@ export type SaveAutoStartConfigMutation = {
     updatedAt: any;
     botId: string;
     id: string;
+  };
+};
+
+export type MyselfQueryVariables = Exact<{ [key: string]: never }>;
+
+export type MyselfQuery = {
+  __typename?: 'Query';
+  myself: {
+    __typename?: 'User';
+    id: string;
+    mobilePhoneNumber?: string | null;
+    username: string;
+    avatar?: string | null;
+    mobilePhoneVerified: boolean;
+    nickname?: string | null;
+    createdAt: any;
+    updatedAt: any;
+    roles: Array<UserRoleType>;
   };
 };
 
@@ -355,6 +395,11 @@ export type BotQuery = {
   } | null;
 };
 
+export const PwdLoginDocument = gql`
+  mutation pwdLogin($password: String!, $username: String!) {
+    pwdLogin(password: $password, username: $username)
+  }
+`;
 export const StartBotDocument = gql`
   mutation startBot($startBotId: String, $name: String) {
     startBot(id: $startBotId, name: $name) {
@@ -377,6 +422,21 @@ export const SaveAutoStartConfigDocument = gql`
       updatedAt
       botId
       id
+    }
+  }
+`;
+export const MyselfDocument = gql`
+  query myself {
+    myself {
+      id
+      mobilePhoneNumber
+      username
+      avatar
+      mobilePhoneVerified
+      nickname
+      createdAt
+      updatedAt
+      roles
     }
   }
 `;
@@ -423,6 +483,20 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    pwdLogin(
+      variables: PwdLoginMutationVariables,
+      requestHeaders?: Dom.RequestInit['headers'],
+    ): Promise<PwdLoginMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<PwdLoginMutation>(PwdLoginDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'pwdLogin',
+        'mutation',
+      );
+    },
     startBot(
       variables?: StartBotMutationVariables,
       requestHeaders?: Dom.RequestInit['headers'],
@@ -449,6 +523,20 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
           }),
         'SaveAutoStartConfig',
         'mutation',
+      );
+    },
+    myself(
+      variables?: MyselfQueryVariables,
+      requestHeaders?: Dom.RequestInit['headers'],
+    ): Promise<MyselfQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<MyselfQuery>(MyselfDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'myself',
+        'query',
       );
     },
     botStatus(

@@ -55,10 +55,12 @@
     </div>
     <div style="display: flex; justify-content: space-between; margin: 10px 0">
       <BasicButton :loading="loading" @click="handleCreateBot">创建机器人</BasicButton>
-      <div class="search">
+      <!-- <div class="search">
         <input placeholder="请输入查找类型..." />
-        <BasicButton :loading="loading" @click="handleCreateBot">查找</BasicButton>
-      </div>
+        <BasicButton :disabled="loading" :loading="searchLoading" @click="handleCreateBot"
+          >查找</BasicButton
+        >
+      </div> -->
     </div>
     <Table :dataSource="bot?.botContacts ?? []" :columns="columns" />
   </div>

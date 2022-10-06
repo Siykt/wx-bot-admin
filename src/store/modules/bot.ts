@@ -14,19 +14,17 @@ interface BotState {
 export const useBotStore = defineStore({
   id: 'bot',
   state: (): BotState => ({
-    botId: localStorage.getItem('botId') ?? '',
+    botId: '',
     scanQrcode: undefined,
     status: 0,
     botInfo: undefined,
   }),
   actions: {
-    async createBot(startBotId: string) {
-      // 单机器人模型
-      if (this.botId) {
-        startBotId = this.botId;
-      }
+    async createBot(botName: string) {
       const { startBot } = await graphqlClient.startBot({
-        startBotId,
+        // 单机器人模型
+        startBotId: this.botId,
+        name: botName,
       });
 
       this.botId = startBot.id;

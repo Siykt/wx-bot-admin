@@ -11,7 +11,7 @@
   import { AppProvider } from '/@/components/Application';
   import { useTitle } from '/@/hooks/web/useTitle';
   import { useLocale } from '/@/locales/useLocale';
-
+  import '/@/components/Icon';
   // support Multi-language
   const { getAntdLocale } = useLocale();
 

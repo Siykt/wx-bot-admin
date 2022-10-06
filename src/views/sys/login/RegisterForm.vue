@@ -10,20 +10,21 @@
           :placeholder="t('sys.login.userName')"
         />
       </FormItem>
-      <FormItem name="mobile" class="enter-x">
+      <FormItem name="email" class="enter-x">
         <Input
           size="large"
-          v-model:value="formData.mobile"
-          :placeholder="t('sys.login.mobile')"
+          v-model:value="formData.email"
+          :placeholder="t('sys.login.email')"
           class="fix-auto-fill"
         />
       </FormItem>
-      <FormItem name="sms" class="enter-x">
+      <FormItem name="code" class="enter-x">
         <CountdownInput
           size="large"
           class="fix-auto-fill"
-          v-model:value="formData.sms"
-          :placeholder="t('sys.login.smsCode')"
+          :sendCodeApi="handleSendCode"
+          v-model:value="formData.code"
+          :placeholder="t('sys.login.emailCode')"
         />
       </FormItem>
       <FormItem name="password" class="enter-x">
@@ -68,16 +69,17 @@
 <script lang="ts" setup>
   import { reactive, ref, unref, computed } from 'vue';
   import LoginFormTitle from './LoginFormTitle.vue';
-  import { Form, Input, Button, Checkbox } from 'ant-design-vue';
+  import { Form, Input, Button, Checkbox, message } from 'ant-design-vue';
   import { StrengthMeter } from '/@/components/StrengthMeter';
   import { CountdownInput } from '/@/components/CountDown';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useLoginState, useFormRules, useFormValid, LoginStateEnum } from './useLogin';
+  import graphqlClient from '/@/graphql';
 
   const FormItem = Form.Item;
   const InputPassword = Input.Password;
   const { t } = useI18n();
-  const { handleBackLogin, getLoginState } = useLoginState();
+  const { handleBackLogin, getLoginState, setLoginState } = useLoginState();
 
   const formRef = ref();
   const loading = ref(false);
@@ -86,8 +88,8 @@
     account: '',
     password: '',
     confirmPassword: '',
-    mobile: '',
-    sms: '',
+    email: '',
+    code: '',
     policy: false,
   });
 
@@ -96,9 +98,25 @@
 
   const getShow = computed(() => unref(getLoginState) === LoginStateEnum.REGISTER);
 
+  async function handleSendCode() {
+    if (!formData.email) {
+      message.error('请输入邮箱');
+      return false;
+    }
+    const { requestEmailCode } = await graphqlClient.requestEmailCode({ email: formData.email });
+    return requestEmailCode;
+  }
+
   async function handleRegister() {
-    const data = await validForm();
+    const data: typeof formData = await validForm();
     if (!data) return;
-    console.log(data);
+    await graphqlClient.signUpByEmail({
+      email: data.email,
+      password: data.password,
+      nickname: data.account,
+      code: data.code,
+    });
+    message.success('注册成功, 请使用账号密码登录');
+    setLoginState(LoginStateEnum.LOGIN);
   }
 </script>

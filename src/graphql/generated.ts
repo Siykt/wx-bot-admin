@@ -185,8 +185,12 @@ export type Mutation = {
   /** 密码登录 */
   pwdLogin: Scalars['String'];
   removeAutoConfig: Scalars['Boolean'];
+  /** 发送邮件验证码 */
+  requestEmailCode: Scalars['Boolean'];
   /** 创建/更新自动化配置 */
   saveAutoStartConfig: AutoReplyConfig;
+  /** 邮箱注册 */
+  signUpByEmail: Scalars['Boolean'];
   /** 启动/创建机器人 */
   startBot: Bot;
   /** 上传文件 */
@@ -202,8 +206,19 @@ export type MutationRemoveAutoConfigArgs = {
   id: Scalars['String'];
 };
 
+export type MutationRequestEmailCodeArgs = {
+  email: Scalars['String'];
+};
+
 export type MutationSaveAutoStartConfigArgs = {
   input: AutoReplyConfigInput;
+};
+
+export type MutationSignUpByEmailArgs = {
+  code: Scalars['String'];
+  email: Scalars['String'];
+  nickname: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type MutationStartBotArgs = {
@@ -215,18 +230,48 @@ export type MutationUploadArgs = {
   file: Scalars['Upload'];
 };
 
+export type PagedAutoReplyConfig = {
+  __typename?: 'PagedAutoReplyConfig';
+  count: Scalars['Int'];
+  data: Array<AutoReplyConfig>;
+  page: Scalars['Int'];
+  size: Scalars['Int'];
+};
+
+/** 分页查询条件 */
+export type PaginationInput = {
+  /** 页码 */
+  page?: InputMaybe<Scalars['Float']>;
+  /** 每页大小 */
+  size?: InputMaybe<Scalars['Float']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   /** 自动化配置详情 */
   autoReplyConfig: AutoReplyConfig;
+  /** 自动化配置列表 */
+  autoStartConfigList: PagedAutoReplyConfig;
   /** 获取机器人 */
   bot?: Maybe<Bot>;
   /** 查询自身 */
   myself: User;
+  /** 获取自己的机器人(单机器人模型) */
+  myselfBot?: Maybe<Bot>;
 };
 
 export type QueryAutoReplyConfigArgs = {
   id: Scalars['String'];
+};
+
+export type QueryAutoStartConfigListArgs = {
+  botId: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
+  pagination?: InputMaybe<PaginationInput>;
+  sort?: InputMaybe<Scalars['String']>;
+  triggerPeriod?: InputMaybe<TriggerPeriod>;
+  triggerRate?: InputMaybe<TriggerRate>;
+  triggerType?: InputMaybe<TriggerType>;
 };
 
 export type QueryBotArgs = {
@@ -334,6 +379,21 @@ export type SaveAutoStartConfigMutation = {
   };
 };
 
+export type RequestEmailCodeMutationVariables = Exact<{
+  email: Scalars['String'];
+}>;
+
+export type RequestEmailCodeMutation = { __typename?: 'Mutation'; requestEmailCode: boolean };
+
+export type SignUpByEmailMutationVariables = Exact<{
+  password: Scalars['String'];
+  nickname: Scalars['String'];
+  code: Scalars['String'];
+  email: Scalars['String'];
+}>;
+
+export type SignUpByEmailMutation = { __typename?: 'Mutation'; signUpByEmail: boolean };
+
 export type MyselfQueryVariables = Exact<{ [key: string]: never }>;
 
 export type MyselfQuery = {
@@ -423,6 +483,16 @@ export const SaveAutoStartConfigDocument = gql`
       botId
       id
     }
+  }
+`;
+export const RequestEmailCodeDocument = gql`
+  mutation requestEmailCode($email: String!) {
+    requestEmailCode(email: $email)
+  }
+`;
+export const SignUpByEmailDocument = gql`
+  mutation signUpByEmail($password: String!, $nickname: String!, $code: String!, $email: String!) {
+    signUpByEmail(password: $password, nickname: $nickname, code: $code, email: $email)
   }
 `;
 export const MyselfDocument = gql`
@@ -522,6 +592,34 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'SaveAutoStartConfig',
+        'mutation',
+      );
+    },
+    requestEmailCode(
+      variables: RequestEmailCodeMutationVariables,
+      requestHeaders?: Dom.RequestInit['headers'],
+    ): Promise<RequestEmailCodeMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RequestEmailCodeMutation>(RequestEmailCodeDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'requestEmailCode',
+        'mutation',
+      );
+    },
+    signUpByEmail(
+      variables: SignUpByEmailMutationVariables,
+      requestHeaders?: Dom.RequestInit['headers'],
+    ): Promise<SignUpByEmailMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<SignUpByEmailMutation>(SignUpByEmailDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'signUpByEmail',
         'mutation',
       );
     },

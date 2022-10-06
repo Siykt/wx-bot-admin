@@ -48,9 +48,14 @@
       <Button type="primary" size="large" block @click="handleLogin" :loading="loading">
         {{ t('sys.login.loginButton') }}
       </Button>
-      <!-- <Button size="large" class="mt-4 enter-x" block @click="handleRegister">
+      <Button
+        size="large"
+        class="mt-4 enter-x"
+        block
+        @click="setLoginState(LoginStateEnum.REGISTER)"
+      >
         {{ t('sys.login.registerButton') }}
-      </Button> -->
+      </Button>
     </FormItem>
     <!-- <ARow class="enter-x">
       <ACol :md="8" :xs="24">

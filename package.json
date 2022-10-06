@@ -26,7 +26,7 @@
     "reinstall": "rimraf yarn.lock && rimraf package.lock.json && rimraf node_modules && npm run bootstrap",
     "prepare": "husky install",
     "gen:icon": "esno ./build/generate/icon/index.ts",
-    "gen:graphql": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 graphql-codegen -c src/graphql/codegen.yml"
+    "gen:graphql": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 graphql-codegen -c src/graphql/codegen.yml && prettier --write \"src/graphql/**/*.{js,ts}\""
   },
   "dependencies": {
     "@ant-design/colors": "^6.0.0",

@@ -24,3 +24,11 @@ mutation SaveAutoStartConfig($input: AutoReplyConfigInput!) {
     id
   }
 }
+
+mutation requestEmailCode($email: String!) {
+  requestEmailCode(email: $email)
+}
+
+mutation signUpByEmail($password: String!, $nickname: String!, $code: String!, $email: String!) {
+  signUpByEmail(password: $password, nickname: $nickname, code: $code, email: $email)
+}

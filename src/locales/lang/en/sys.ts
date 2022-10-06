@@ -99,6 +99,7 @@ export default {
     confirmPassword: 'Confirm Password',
     email: 'Email',
     smsCode: 'SMS code',
+    emailCode: 'Email code',
     mobile: 'Mobile',
   },
 };

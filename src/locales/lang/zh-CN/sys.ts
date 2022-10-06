@@ -93,6 +93,7 @@ export default {
     confirmPassword: '确认密码',
     email: '邮箱',
     smsCode: '短信验证码',
+    emailCode: '邮箱验证码',
     mobile: '手机号码',
   },
 };
